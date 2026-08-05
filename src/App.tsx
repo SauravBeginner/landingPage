@@ -119,6 +119,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "AI Chat App",
     text: "AI-powered chat interface with text and voice input.",
     link: "https://github.com/SauravBeginner/ai-chat-app",
+    liveLink: "https://chat.tech10x.in",
   },
   {
     icon: Building2,
