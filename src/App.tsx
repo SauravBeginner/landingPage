@@ -71,7 +71,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Gym & Fitness Studio",
     text: "Class schedules, trainer profiles, membership plans, trial booking.",
     link: "https://github.com/SauravBeginner/gym-website",
-    liveLink: "https://gym-website-one-green.vercel.app",
+    liveLink: "https://gyms.tech10x.in",
   },
   {
     icon: Hotel,
@@ -87,6 +87,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Real Estate Agency",
     text: "Property listings with a mortgage calculator and viewing-request booking.",
     link: "https://github.com/SauravBeginner/real-estate-agency",
+    liveLink: "https://flats.tech10x.in",
   },
   {
     icon: Scale,
@@ -94,6 +95,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Law Firm",
     text: "Practice areas, attorney profiles, FAQ accordion, consultation booking.",
     link: "https://github.com/SauravBeginner/law-firm",
+    liveLink: "https://lawfirm.tech10x.in",
   },
   {
     icon: Sparkles,
@@ -108,6 +110,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Interior Design Studio",
     text: "Editorial-style portfolio with a filterable project gallery.",
     link: "https://github.com/SauravBeginner/interior-design-studio",
+    liveLink: "https://interior.tech10x.in",
   },
   {
     icon: MessageCircle,
