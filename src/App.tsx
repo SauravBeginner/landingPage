@@ -1,99 +1,225 @@
 import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType } from "react";
 import {
   ArrowRight,
-  BarChart3,
+  Building2,
   Check,
   ChevronDown,
   ChevronRight,
   Clock3,
+  Dumbbell,
+  ExternalLink,
+  Gauge,
+  Home,
+  Hotel,
   Layers3,
+  LayoutDashboard,
   Menu,
+  MessageCircle,
   Moon,
+  Newspaper,
+  Palette,
+  Rocket,
+  Scale,
   ShieldCheck,
+  ShoppingCart,
+  Sparkles,
   SunMedium,
   Users,
+  UtensilsCrossed,
   X,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 
-const partners = ["Northstar", "Fieldline", "Astra", "Summit", "Brightside"];
+// TODO: swap for your real inbox / WhatsApp number before this goes live.
+const CONTACT_EMAIL = "hello@tech10x.in";
+const AUDIT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Free%205-point%20store%20audit&body=Hi%20Tech10x%2C%0A%0AHere%27s%20a%20link%20to%20our%20store%3A%20`;
+
+const capabilities = [
+  "Storefronts",
+  "AI Support Bots",
+  "WhatsApp Automation",
+  "Store Audits",
+  "MVP Builds",
+];
 
 const stats = [
-  { value: 42, suffix: "%", label: "faster campaign launches" },
-  { value: 18, suffix: "k", label: "lead events processed" },
-  { value: 99.9, suffix: "%", label: "uptime target" },
+  { value: 14, suffix: "-day", label: "Launch Sprint delivery, or 10% off" },
+  { value: 3, suffix: "", label: "clients we take on at a time, max" },
+  { value: 50, suffix: "+", label: "support hours/month an AI bot can take off your team" },
+];
+
+const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: string; link: string; liveLink?: string }> = [
+  {
+    icon: ShoppingCart,
+    iconClass: "from-blue-600 to-blue-900",
+    title: "E-Commerce Platform",
+    text: "Product listing, cart, and checkout flow.",
+    link: "https://github.com/SauravBeginner/ecommerce",
+    liveLink: "https://ecom.tech10x.in",
+  },
+  {
+    icon: UtensilsCrossed,
+    iconClass: "from-amber-600 to-stone-900",
+    title: "Restaurant Website",
+    text: "Online booking, seasonal menu, banquet and catering pages.",
+    link: "https://github.com/SauravBeginner/restaurant-website",
+    liveLink: "https://resturant.tech10x.in",
+  },
+  {
+    icon: Dumbbell,
+    iconClass: "from-red-600 to-neutral-900",
+    title: "Gym & Fitness Studio",
+    text: "Class schedules, trainer profiles, membership plans, trial booking.",
+    link: "https://github.com/SauravBeginner/gym-website",
+    liveLink: "https://gym-website-one-green.vercel.app",
+  },
+  {
+    icon: Hotel,
+    iconClass: "from-sky-700 to-slate-900",
+    title: "Hotel Booking",
+    text: "Room browsing, amenities, dining, and a working reservation flow.",
+    link: "https://github.com/SauravBeginner/hotel-booking",
+    liveLink: "https://hotel.tech10x.in",
+  },
+  {
+    icon: Home,
+    iconClass: "from-emerald-600 to-slate-900",
+    title: "Real Estate Agency",
+    text: "Property listings with a mortgage calculator and viewing-request booking.",
+    link: "https://github.com/SauravBeginner/real-estate-agency",
+  },
+  {
+    icon: Scale,
+    iconClass: "from-amber-700 to-neutral-900",
+    title: "Law Firm",
+    text: "Practice areas, attorney profiles, FAQ accordion, consultation booking.",
+    link: "https://github.com/SauravBeginner/law-firm",
+  },
+  {
+    icon: Sparkles,
+    iconClass: "from-rose-500 to-rose-900",
+    title: "Salon & Spa",
+    text: "Categorized service menu, stylist profiles, appointment booking.",
+    link: "https://github.com/SauravBeginner/salon-spa",
+  },
+  {
+    icon: Palette,
+    iconClass: "from-orange-600 to-neutral-900",
+    title: "Interior Design Studio",
+    text: "Editorial-style portfolio with a filterable project gallery.",
+    link: "https://github.com/SauravBeginner/interior-design-studio",
+  },
+  {
+    icon: MessageCircle,
+    iconClass: "from-violet-500 to-purple-950",
+    title: "AI Chat App",
+    text: "AI-powered chat interface with text and voice input.",
+    link: "https://github.com/SauravBeginner/ai-chat-app",
+  },
+  {
+    icon: Building2,
+    iconClass: "from-emerald-700 to-slate-800",
+    title: "Hotel SaaS Platform",
+    text: "QR-based in-room ordering, cab booking, sightseeing packages.",
+    link: "https://github.com/SauravBeginner/hotel-saas-platform",
+    liveLink: "https://booking.tech10x.in",
+  },
+  {
+    icon: LayoutDashboard,
+    iconClass: "from-indigo-600 to-purple-900",
+    title: "Admin Dashboard",
+    text: "User management, analytics, and reporting views.",
+    link: "https://github.com/SauravBeginner/admin-dashboard",
+  },
+  {
+    icon: Newspaper,
+    iconClass: "from-orange-500 to-amber-900",
+    title: "Blog Website",
+    text: "Full-featured blog UI, built for speed.",
+    link: "https://github.com/SauravBeginner/blog-website",
+  },
 ];
 
 const features: Array<{ icon: LucideIcon; title: string; text: string }> = [
   {
-    icon: BarChart3,
-    title: "Campaign analytics",
-    text: "Track traffic, demo requests, source quality, and conversion trends from one clean view.",
+    icon: Rocket,
+    title: "Launch Sprint",
+    text: "Your store or business site, designed, built, and live in 14 days — payments, analytics, and a training handover included.",
   },
   {
-    icon: Users,
-    title: "Lead qualification",
-    text: "Capture business context, route prospects, and keep handoff details ready for sales.",
+    icon: MessageCircle,
+    title: "AI Support Bot",
+    text: "A chatbot trained on your catalog, policies, and FAQs — on your site and WhatsApp. Handles order-status and returns so your team doesn't have to.",
   },
   {
-    icon: ShieldCheck,
-    title: "Trust-first messaging",
-    text: "Use proof, security cues, and clear outcomes so the page feels credible quickly.",
+    icon: Gauge,
+    title: "Store Rescue",
+    text: "A full audit of your store plus the top 10 conversion and speed fixes, implemented. You get a before/after report with the numbers.",
   },
   {
-    icon: Zap,
-    title: "Fast launch system",
-    text: "Reusable page sections make it easy to test offers, pricing, and audience-specific pages.",
+    icon: Layers3,
+    title: "MVP-in-30",
+    text: "Your app idea, scoped tight and shipped in 30 days. Web or mobile. Fixed scope, fixed price, weekly demos.",
   },
 ];
 
 const steps = [
-  "Position the offer with a clear customer outcome.",
-  "Capture and qualify every high-intent visitor.",
-  "Measure the page, improve the copy, and scale what converts.",
+  "Free 5-point audit — we tell you what's broken and what it's costing you.",
+  "Fixed scope, fixed price — you approve the plan before we write a line of code.",
+  "Ship with a deadline guarantee — weekly demos, live in days, not months.",
 ];
 
-const plans = [
+const packages = [
   {
-    name: "Starter",
-    monthlyPrice: 29,
-    yearlyPrice: 23,
-    text: "For founders validating a new business offer.",
-    items: ["Landing page sections", "Lead capture", "Basic reporting"],
+    name: "Launch Sprint",
+    price: "₹40k – 80k",
+    text: "Store or business site, live in 14 days.",
+    items: ["Design + build", "Payments & analytics", "Live in 14 days or 10% off"],
   },
   {
-    name: "Growth",
-    monthlyPrice: 79,
-    yearlyPrice: 63,
-    text: "For teams running campaigns every month.",
-    items: ["Everything in Starter", "Pricing and testimonials", "CRM-ready lead fields"],
+    name: "AI Support Bot",
+    price: "₹60k – 120k",
+    text: "Chatbot trained on your catalog and policies.",
+    items: ["Site + WhatsApp", "Order-status & returns", "Trained on your own data"],
     featured: true,
   },
   {
-    name: "Scale",
-    monthlyPrice: 149,
-    yearlyPrice: 119,
-    text: "For teams building a repeatable lead engine.",
-    items: ["Everything in Growth", "Multi-page content blocks", "Priority support"],
+    name: "Store Rescue",
+    price: "₹50k – 90k",
+    text: "Audit plus the top 10 fixes, implemented.",
+    items: ["Full store audit", "Top 10 fixes shipped", "Before/after report"],
+  },
+  {
+    name: "MVP-in-30",
+    price: "₹2L – 4L",
+    text: "Your app idea, shipped in 30 days.",
+    items: ["Web or mobile", "Fixed scope & price", "Weekly demos"],
+  },
+  {
+    name: "Care Plan",
+    price: "from ₹15k/mo",
+    text: "Maintenance, monitoring, and monthly improvements.",
+    items: ["Uptime monitoring", "Monthly improvement hours", "Priority response"],
   },
 ];
 
 const faqs = [
   {
-    question: "Can this be a real business landing page?",
+    question: "Why fixed price?",
     answer:
-      "Yes. It has the sections buyers expect: offer, proof, features, workflow, pricing, and clear calls to action.",
+      "Because you shouldn't carry the risk of our speed. Scope is agreed upfront; changes outside scope are quoted separately.",
   },
   {
-    question: "Does dark and light mode work?",
-    answer:
-      "Yes. The switch remembers the selected theme and uses your system preference the first time you visit.",
+    question: "What if it takes longer than promised?",
+    answer: "Launch Sprints carry a deadline guarantee: live in 14 days or 10% off.",
   },
   {
-    question: "Why Tailwind instead of raw CSS?",
-    answer:
-      "Tailwind keeps layout, spacing, responsive states, and shadcn-style tokens close to the markup, so the UI is easier to refine.",
+    question: "Do you disappear after launch?",
+    answer: "Every project includes 2 weeks of post-launch fixes; most clients move to a Care Plan.",
+  },
+  {
+    question: "Can you work with our existing site or agency?",
+    answer: "Yes. About a third of our work is white-label for other agencies.",
   },
 ];
 
@@ -212,7 +338,7 @@ function DashboardVisual() {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2 rounded-lg border border-border bg-muted p-4 sm:col-span-1 sm:row-span-2">
-          <p className="mb-4 text-sm text-muted-foreground">Revenue pipeline</p>
+          <p className="mb-4 text-sm text-muted-foreground">Support tickets automated</p>
           <div className="flex h-32 items-end gap-2 sm:h-44">
             {barHeights.map((height, index) => (
               <span
@@ -228,13 +354,13 @@ function DashboardVisual() {
         </div>
         <div className="rounded-lg border border-border bg-muted p-4">
           <Clock3 className="mb-4 text-primary" size={20} />
-          <strong className="block text-2xl">2.4m</strong>
-          <small className="text-muted-foreground">avg. session</small>
+          <strong className="block text-2xl">14 days</strong>
+          <small className="text-muted-foreground">avg. launch time</small>
         </div>
         <div className="rounded-lg border border-border bg-muted p-4">
           <Users className="mb-4 text-primary" size={20} />
-          <strong className="block text-2xl">328</strong>
-          <small className="text-muted-foreground">qualified leads</small>
+          <strong className="block text-2xl">Max 3</strong>
+          <small className="text-muted-foreground">clients at a time</small>
         </div>
       </div>
     </div>
@@ -242,8 +368,9 @@ function DashboardVisual() {
 }
 
 const navLinks = [
-  { id: "features", label: "Features" },
-  { id: "workflow", label: "Workflow" },
+  { id: "services", label: "Services" },
+  { id: "work", label: "Work" },
+  { id: "workflow", label: "How we work" },
   { id: "pricing", label: "Pricing" },
   { id: "faq", label: "FAQ" },
 ];
@@ -253,7 +380,6 @@ function App() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [yearly, setYearly] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
@@ -307,13 +433,13 @@ function App() {
         <a
           className="inline-flex w-fit items-center gap-2.5 no-underline"
           href="#"
-          aria-label="LaunchLedger home"
+          aria-label="Tech10x home"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
         >
           <span className="grid h-9 w-9 place-items-center rounded-md bg-foreground text-xs font-black text-background">
-            LL
+            10X
           </span>
-          <strong>LaunchLedger</strong>
+          <strong>Tech10x</strong>
         </a>
 
         <nav className="hidden flex-1 justify-center gap-6 text-sm font-bold text-muted-foreground md:flex">
@@ -336,6 +462,10 @@ function App() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <Button href={AUDIT_MAILTO} className="hidden sm:inline-flex px-3.5">
+            Get a free audit
+          </Button>
+
           <Button
             as="button"
             type="button"
@@ -345,7 +475,6 @@ function App() {
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
           >
             {theme === "light" ? <Moon size={17} /> : <SunMedium size={17} />}
-            <span className="hidden sm:inline">{theme === "light" ? "Dark" : "Light"}</span>
           </Button>
 
           <Button
@@ -384,6 +513,9 @@ function App() {
                   {label}
                 </a>
               ))}
+              <Button href={AUDIT_MAILTO} className="w-fit" onClick={() => setMobileMenuOpen(false)}>
+                Get a free audit
+              </Button>
             </div>
           </nav>
         </>
@@ -401,32 +533,36 @@ function App() {
 
           <div className="relative mx-auto grid max-w-[1180px] items-center gap-10 px-4 py-12 sm:px-8 md:py-16 lg:grid-cols-[1fr_1fr] lg:gap-16 lg:px-9 lg:py-20">
           <div>
-            <Badge>Business landing page system</Badge>
-            <h1 className="mt-4 text-[3.6rem] leading-[0.95] tracking-normal sm:text-[5rem] lg:text-[5.5rem]">
-              LaunchLedger
+            <Badge>AI dev studio for D2C brands</Badge>
+            <h1 className="mt-4 text-[2.75rem] leading-[1.05] tracking-normal sm:text-[3.6rem] lg:text-[4.1rem]">
+              Sell more. Support less.
             </h1>
             <p className="mt-4 max-w-[52ch] text-base leading-7 text-muted-foreground sm:text-lg">
-              A sharper landing page for teams that need to explain the offer, collect qualified leads,
-              and turn campaign traffic into sales conversations.
+              We build custom storefronts, AI support bots, and WhatsApp automation for D2C
+              brands — shipped in weeks, not months. Fixed prices, fixed deadlines.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button href="#pricing">
-                View plans <ArrowRight size={18} />
+              <Button href={AUDIT_MAILTO}>
+                Get a free 5-point store audit <ArrowRight size={18} />
               </Button>
-              <Button href="#features" variant="secondary">
-                See details <ChevronRight size={18} />
+              <Button href="#pricing" variant="secondary">
+                See pricing <ChevronRight size={18} />
               </Button>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Every project ships with a deadline guarantee.
+            </p>
           </div>
 
           <DashboardVisual />
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-[1180px] grid-cols-1 gap-3 border-b border-border px-4 py-8 text-sm font-black text-muted-foreground sm:grid-cols-5 sm:px-8 lg:px-9">
-          {partners.map((partner) => (
-            <span className="rounded-md border border-border bg-card px-3 py-3 text-center sm:border-0 sm:bg-transparent" key={partner}>
-              {partner}
+        {/* Capability strip */}
+        <section className="mx-auto grid max-w-[1180px] grid-cols-2 gap-3 border-b border-border px-4 py-8 text-sm font-black text-muted-foreground sm:grid-cols-5 sm:px-8 lg:px-9">
+          {capabilities.map((capability) => (
+            <span className="rounded-md border border-border bg-card px-3 py-3 text-center sm:border-0 sm:bg-transparent" key={capability}>
+              {capability}
             </span>
           ))}
         </section>
@@ -443,15 +579,16 @@ function App() {
           ))}
         </section>
 
-        {/* Features with hover glow */}
-        <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="features">
+        {/* Services */}
+        <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="services">
           <div className="mb-7 max-w-[720px]">
-            <Badge>What changed</Badge>
+            <Badge>Ways we can work together</Badge>
             <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
-              More detail, cleaner hierarchy, and a calmer business feel.
+              Productized packages, not open-ended retainers.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              The page now gives visitors enough context to understand the product while keeping each section easy to scan.
+              Every engagement has a fixed scope and a fixed price, so you know what you're
+              getting and when it ships.
             </p>
           </div>
 
@@ -469,11 +606,68 @@ function App() {
           </div>
         </section>
 
+        {/* Work showcase */}
+        <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="work">
+          <div className="mb-7 max-w-[720px]">
+            <Badge>What we've built</Badge>
+            <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
+              Real platforms, across real verticals.
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              A sample of the storefronts, booking flows, dashboards, and AI interfaces we've
+              shipped — proof of the build quality and speed behind every package.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {work.map(({ icon: Icon, iconClass, title, text, link, liveLink }) => (
+              <Card
+                key={title}
+                className="group grid gap-4 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_24px_56px_rgba(24,32,44,0.14)] dark:hover:shadow-[0_24px_56px_rgba(0,0,0,0.38)]"
+              >
+                <div className={cn("grid h-11 w-11 place-items-center rounded-lg bg-gradient-to-br text-white", iconClass)}>
+                  <Icon size={20} />
+                </div>
+                <div>
+                  <h3 className="mb-1.5 text-lg font-extrabold">{title}</h3>
+                  <p className="leading-7 text-muted-foreground">{text}</p>
+                </div>
+                <a
+                  className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-primary no-underline"
+                  href={liveLink ?? link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {liveLink ? "View live site" : "View code"} <ExternalLink size={14} />
+                </a>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Why Tech10x */}
+        <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9">
+          <Card className="grid gap-6 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+            <div>
+              <Badge>Why Tech10x</Badge>
+              <h2 className="mt-4 text-3xl leading-tight sm:text-4xl">One senior team, not agency bloat.</h2>
+            </div>
+            <p className="leading-7 text-muted-foreground">
+              Most D2C brands don't need a big agency and a six-month timeline — they need a
+              small team that ships. We work with a maximum of three clients at a time, so
+              every project gets real attention instead of getting handed off to a junior
+              account team. About a third of our work is white-label for other agencies that
+              need senior engineering on tap.
+            </p>
+          </Card>
+        </section>
+
+        {/* How we work */}
         <section className="mx-auto grid max-w-[1180px] gap-8 px-4 py-12 sm:px-8 md:grid-cols-[0.85fr_1.15fr] lg:px-9" id="workflow">
           <div>
-            <Badge>Workflow</Badge>
+            <Badge>How we work</Badge>
             <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
-              From campaign click to qualified conversation.
+              From audit to a live, working system.
             </h2>
           </div>
           <ol className="grid gap-3">
@@ -486,75 +680,48 @@ function App() {
           </ol>
         </section>
 
-        {/* Pricing with monthly/yearly toggle */}
+        {/* Pricing */}
         <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="pricing">
           <div className="mb-7 max-w-[720px]">
             <Badge>Pricing</Badge>
             <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
-              Plans for testing, growing, and scaling the page.
+              Fixed-price packages for every stage.
             </h2>
+            <p className="mt-4 text-muted-foreground">
+              International rates available on request. Every package includes a deadline
+              guarantee and a training handover.
+            </p>
           </div>
 
-          {/* Billing toggle */}
-          <div className="mb-8 flex items-center gap-2">
-            <div className="flex rounded-lg border border-border bg-muted p-1">
-              <button
-                type="button"
-                onClick={() => setYearly(false)}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {packages.map((pkg) => (
+              <Card
                 className={cn(
-                  "rounded-md px-4 py-1.5 text-sm font-bold transition-all duration-200",
-                  !yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  "grid gap-5",
+                  pkg.featured && "border-primary/60 shadow-[0_22px_54px_rgba(24,32,44,0.14)] dark:shadow-[0_22px_54px_rgba(0,0,0,0.38)]",
                 )}
+                key={pkg.name}
               >
-                Monthly
-              </button>
-              <button
-                type="button"
-                onClick={() => setYearly(true)}
-                className={cn(
-                  "flex items-center gap-2 rounded-md px-4 py-1.5 text-sm font-bold transition-all duration-200",
-                  yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Yearly
-                <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-black text-primary">-20%</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {plans.map((plan) => {
-              const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
-              return (
-                <Card
-                  className={cn(
-                    "grid gap-5",
-                    plan.featured && "border-primary/60 shadow-[0_22px_54px_rgba(24,32,44,0.14)] dark:shadow-[0_22px_54px_rgba(0,0,0,0.38)]",
-                  )}
-                  key={plan.name}
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-extrabold">{plan.name}</h3>
-                      {plan.featured ? <Badge className="normal-case tracking-normal">Popular</Badge> : null}
-                    </div>
-                    <div className="my-3 flex items-end gap-1">
-                      <strong className="text-4xl">${price}</strong>
-                      <span className="mb-1 text-sm text-muted-foreground">/mo</span>
-                    </div>
-                    <p className="leading-7 text-muted-foreground">{plan.text}</p>
+                <div>
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-extrabold">{pkg.name}</h3>
+                    {pkg.featured ? <Badge className="normal-case tracking-normal">Popular</Badge> : null}
                   </div>
-                  <ul className="grid gap-2 pl-5 text-muted-foreground">
-                    {plan.items.map((item) => (
-                      <li className="list-disc" key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  <Button className="mt-auto w-fit" href="#top" variant={plan.featured ? "primary" : "secondary"}>
-                    Choose plan <ArrowRight size={16} />
-                  </Button>
-                </Card>
-              );
-            })}
+                  <div className="my-3">
+                    <strong className="text-3xl">{pkg.price}</strong>
+                  </div>
+                  <p className="leading-7 text-muted-foreground">{pkg.text}</p>
+                </div>
+                <ul className="grid gap-2 pl-5 text-muted-foreground">
+                  {pkg.items.map((item) => (
+                    <li className="list-disc" key={item}>{item}</li>
+                  ))}
+                </ul>
+                <Button className="mt-auto w-fit" href={AUDIT_MAILTO} variant={pkg.featured ? "primary" : "secondary"}>
+                  Start with an audit <ArrowRight size={16} />
+                </Button>
+              </Card>
+            ))}
           </div>
         </section>
 
@@ -562,7 +729,7 @@ function App() {
         <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="faq">
           <div className="mb-7 max-w-[720px]">
             <Badge>FAQ</Badge>
-            <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">Quick answers before launch.</h2>
+            <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">Quick answers before we start.</h2>
           </div>
           <div className="grid gap-3">
             {faqs.map((faq, i) => {
@@ -599,10 +766,10 @@ function App() {
         </section>
 
         <section className="mx-auto flex max-w-[1180px] flex-col gap-5 border-t border-border px-4 py-12 sm:px-8 md:flex-row md:items-center lg:px-9">
-          <Layers3 className="shrink-0 text-primary" size={24} />
-          <h2 className="text-3xl leading-tight sm:text-4xl">Ready for a business landing page that feels complete?</h2>
-          <Button className="md:ml-auto" href="#top">
-            Back to top <ArrowRight size={18} />
+          <ShieldCheck className="shrink-0 text-primary" size={24} />
+          <h2 className="text-3xl leading-tight sm:text-4xl">Ready to fix what's costing you sales and support hours?</h2>
+          <Button className="md:ml-auto" href={AUDIT_MAILTO}>
+            Get your free audit <ArrowRight size={18} />
           </Button>
         </section>
       </main>
