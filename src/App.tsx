@@ -103,6 +103,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Salon & Spa",
     text: "Categorized service menu, stylist profiles, appointment booking.",
     link: "https://github.com/SauravBeginner/salon-spa",
+    liveLink: "https://spa.tech10x.in",
   },
   {
     icon: Palette,
