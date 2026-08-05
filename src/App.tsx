@@ -142,6 +142,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Blog Website",
     text: "Full-featured blog UI, built for speed.",
     link: "https://github.com/SauravBeginner/blog-website",
+    liveLink: "https://blogs.tech10x.in",
   },
 ];
 
