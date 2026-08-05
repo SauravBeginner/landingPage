@@ -134,6 +134,7 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     title: "Admin Dashboard",
     text: "User management, analytics, and reporting views.",
     link: "https://github.com/SauravBeginner/admin-dashboard",
+    liveLink: "https://admin.tech10x.in",
   },
   {
     icon: Newspaper,
