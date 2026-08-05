@@ -1,8 +1,9 @@
-import { useEffect, useState, type ComponentPropsWithoutRef, type ElementType } from "react";
+import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType } from "react";
 import {
   ArrowRight,
   BarChart3,
   Check,
+  ChevronDown,
   ChevronRight,
   Clock3,
   Layers3,
@@ -19,9 +20,9 @@ import {
 const partners = ["Northstar", "Fieldline", "Astra", "Summit", "Brightside"];
 
 const stats = [
-  { value: "42%", label: "faster campaign launches" },
-  { value: "18k", label: "lead events processed" },
-  { value: "99.9%", label: "uptime target" },
+  { value: 42, suffix: "%", label: "faster campaign launches" },
+  { value: 18, suffix: "k", label: "lead events processed" },
+  { value: 99.9, suffix: "%", label: "uptime target" },
 ];
 
 const features: Array<{ icon: LucideIcon; title: string; text: string }> = [
@@ -56,20 +57,23 @@ const steps = [
 const plans = [
   {
     name: "Starter",
-    price: "$29",
+    monthlyPrice: 29,
+    yearlyPrice: 23,
     text: "For founders validating a new business offer.",
     items: ["Landing page sections", "Lead capture", "Basic reporting"],
   },
   {
     name: "Growth",
-    price: "$79",
+    monthlyPrice: 79,
+    yearlyPrice: 63,
     text: "For teams running campaigns every month.",
     items: ["Everything in Starter", "Pricing and testimonials", "CRM-ready lead fields"],
     featured: true,
   },
   {
     name: "Scale",
-    price: "$149",
+    monthlyPrice: 149,
+    yearlyPrice: 119,
     text: "For teams building a repeatable lead engine.",
     items: ["Everything in Growth", "Multi-page content blocks", "Priority support"],
   },
@@ -113,7 +117,7 @@ function Card({ className, ...props }: ComponentPropsWithoutRef<"article">) {
   return (
     <article
       className={cn(
-        "rounded-lg border border-border bg-card p-6 text-card-foreground shadow-[0_18px_44px_rgba(24,32,44,0.08)] dark:shadow-[0_22px_54px_rgba(0,0,0,0.28)]",
+        "rounded-lg border border-border bg-card p-6 text-card-foreground shadow-[0_18px_44px_rgba(24,32,44,0.08)] transition-all duration-300 dark:shadow-[0_22px_54px_rgba(0,0,0,0.28)]",
         className,
       )}
       {...props}
@@ -148,47 +152,89 @@ function Button<T extends ElementType = "a">({
   );
 }
 
+function useCountUp(target: number, duration = 1500, active = false) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!active) return;
+    let start: number | null = null;
+    const isDecimal = target % 1 !== 0;
+
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = eased * target;
+      setCount(isDecimal ? Math.round(current * 10) / 10 : Math.floor(current));
+      if (progress < 1) requestAnimationFrame(step);
+      else setCount(target);
+    };
+
+    requestAnimationFrame(step);
+  }, [active, target, duration]);
+
+  return count;
+}
+
+function AnimatedStat({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(false);
+  const count = useCountUp(value, 1400, active);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setActive(true); observer.disconnect(); } },
+      { threshold: 0.5 },
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref}>
+      <strong className="mb-1 block text-4xl">
+        {count}{suffix}
+      </strong>
+      <span className="text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
 function DashboardVisual() {
   const barHeights = ["h-20", "h-32", "h-24", "h-40", "h-48"];
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden hero-mesh" aria-hidden="true">
-      <div className="hero-sweep animate-sweep absolute -left-[35%] top-0 h-full w-[32%]" />
-      <div className="animate-drift absolute right-[8%] top-[12%] h-[360px] w-[560px] rounded-full border border-foreground/15" />
-      <div className="animate-drift-reverse absolute right-[15%] top-[28%] h-[260px] w-[420px] rounded-full border border-foreground/15" />
-
-      <div className="animate-float-panel absolute bottom-10 left-4 right-4 rounded-lg border border-border bg-card/95 p-3 shadow-[0_22px_60px_rgba(24,32,44,0.16)] dark:shadow-[0_22px_60px_rgba(0,0,0,0.36)] sm:left-auto sm:right-8 sm:w-[560px] lg:right-24 lg:top-[20%] lg:bottom-auto lg:w-[44vw] lg:max-w-[560px]">
-        <div className="mb-3 flex gap-2 border-b border-border pb-3">
-          <span className="h-2 w-2 rounded-full bg-border" />
-          <span className="h-2 w-2 rounded-full bg-border" />
-          <span className="h-2 w-2 rounded-full bg-border" />
+    <div className="animate-float-panel w-full rounded-lg border border-border bg-card/95 p-3 shadow-[0_22px_60px_rgba(24,32,44,0.16)] dark:shadow-[0_22px_60px_rgba(0,0,0,0.36)]">
+      <div className="mb-3 flex gap-2 border-b border-border pb-3">
+        <span className="h-2 w-2 rounded-full bg-border" />
+        <span className="h-2 w-2 rounded-full bg-border" />
+        <span className="h-2 w-2 rounded-full bg-border" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2 rounded-lg border border-border bg-muted p-4 sm:col-span-1 sm:row-span-2">
+          <p className="mb-4 text-sm text-muted-foreground">Revenue pipeline</p>
+          <div className="flex h-32 items-end gap-2 sm:h-44">
+            {barHeights.map((height, index) => (
+              <span
+                className={cn(
+                  "animate-pulse-bar min-h-10 flex-1 origin-bottom rounded-t-md bg-gradient-to-t from-accent to-primary",
+                  height,
+                )}
+                style={{ animationDelay: `${index * 120}ms` }}
+                key={height}
+              />
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2 rounded-lg border border-border bg-muted p-4 sm:col-span-1 sm:row-span-2">
-            <p className="mb-4 text-sm text-muted-foreground">Revenue pipeline</p>
-            <div className="flex h-32 items-end gap-2 sm:h-52">
-              {barHeights.map((height, index) => (
-                <span
-                  className={cn(
-                    "animate-pulse-bar min-h-10 flex-1 origin-bottom rounded-t-md bg-gradient-to-t from-accent to-primary",
-                    height,
-                  )}
-                  style={{ animationDelay: `${index * 120}ms` }}
-                  key={height}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="rounded-lg border border-border bg-muted p-4">
-            <Clock3 className="mb-4 text-primary" size={20} />
-            <strong className="block text-2xl">2.4m</strong>
-            <small className="text-muted-foreground">avg. session</small>
-          </div>
-          <div className="rounded-lg border border-border bg-muted p-4">
-            <Users className="mb-4 text-primary" size={20} />
-            <strong className="block text-2xl">328</strong>
-            <small className="text-muted-foreground">qualified leads</small>
-          </div>
+        <div className="rounded-lg border border-border bg-muted p-4">
+          <Clock3 className="mb-4 text-primary" size={20} />
+          <strong className="block text-2xl">2.4m</strong>
+          <small className="text-muted-foreground">avg. session</small>
+        </div>
+        <div className="rounded-lg border border-border bg-muted p-4">
+          <Users className="mb-4 text-primary" size={20} />
+          <strong className="block text-2xl">328</strong>
+          <small className="text-muted-foreground">qualified leads</small>
         </div>
       </div>
     </div>
@@ -206,12 +252,14 @@ function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeSection, setActiveSection] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [yearly, setYearly] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("landing-theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const nextTheme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : prefersDark ? "dark" : "light";
-
     setTheme(nextTheme);
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
   }, []);
@@ -224,36 +272,37 @@ function App() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = navLinks
-        .map(({ id }) => ({
-          id,
-          element: document.getElementById(id),
-        }))
+        .map(({ id }) => ({ id, element: document.getElementById(id) }))
         .filter((s): s is { id: string; element: HTMLElement } => s.element !== null);
 
       if (sections.length === 0) return;
 
       const scrollY = window.scrollY + 100;
       let currentSection = sections[0].id;
-
       for (const { id, element } of sections) {
-        if (element.offsetTop <= scrollY) {
-          currentSection = id;
-        } else {
-          break;
-        }
+        if (element.offsetTop <= scrollY) currentSection = id;
+        else break;
       }
-
       setActiveSection(currentSection);
+
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
+      {/* Scroll progress bar */}
+      <div
+        className="fixed top-0 left-0 z-50 h-[3px] bg-primary transition-all duration-75"
+        style={{ width: `${scrollProgress}%` }}
+        aria-hidden="true"
+      />
+
       <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/90 px-4 py-3 backdrop-blur md:px-10 lg:px-[72px]">
         <a
           className="inline-flex w-fit items-center gap-2.5 no-underline"
@@ -272,13 +321,16 @@ function App() {
             <a
               key={id}
               className={cn(
-                "whitespace-nowrap transition-colors hover:text-foreground",
+                "relative whitespace-nowrap transition-colors hover:text-foreground",
                 activeSection === id && "text-foreground",
               )}
               href={`#${id}`}
               aria-current={activeSection === id ? "true" : undefined}
             >
               {label}
+              {activeSection === id && (
+                <span className="absolute -bottom-[17px] left-0 right-0 h-[2px] rounded-full bg-primary" />
+              )}
             </a>
           ))}
         </nav>
@@ -338,16 +390,22 @@ function App() {
       )}
 
       <main className="overflow-hidden">
-        <section className="relative min-h-[780px] px-4 py-10 sm:px-8 md:min-h-[760px] md:py-16 lg:min-h-[calc(100vh-66px)] lg:px-[72px]">
-          <DashboardVisual />
-          <div className="hero-fade pointer-events-none absolute inset-0" />
+        <section className="relative overflow-hidden" id="top">
+          {/* Background decorations */}
+          <div className="hero-mesh pointer-events-none absolute inset-0" aria-hidden="true">
+            <div className="hero-sweep animate-sweep absolute -left-[35%] top-0 h-full w-[32%]" />
+            <div className="animate-drift absolute right-[8%] top-[12%] h-[360px] w-[560px] rounded-full border border-foreground/15" />
+            <div className="animate-drift-reverse absolute right-[15%] top-[28%] h-[260px] w-[420px] rounded-full border border-foreground/15" />
+          </div>
+          <div className="hero-fade pointer-events-none absolute inset-0" aria-hidden="true" />
 
-          <div className="relative z-10 max-w-[650px]" id="top">
+          <div className="relative mx-auto grid max-w-[1180px] items-center gap-10 px-4 py-12 sm:px-8 md:py-16 lg:grid-cols-[1fr_1fr] lg:gap-16 lg:px-9 lg:py-20">
+          <div>
             <Badge>Business landing page system</Badge>
-            <h1 className="mt-4 text-[4.2rem] leading-[0.95] tracking-normal sm:text-[5.8rem] lg:text-[7rem]">
+            <h1 className="mt-4 text-[3.6rem] leading-[0.95] tracking-normal sm:text-[5rem] lg:text-[5.5rem]">
               LaunchLedger
             </h1>
-            <p className="max-w-[56ch] text-base leading-7 text-muted-foreground sm:text-lg">
+            <p className="mt-4 max-w-[52ch] text-base leading-7 text-muted-foreground sm:text-lg">
               A sharper landing page for teams that need to explain the offer, collect qualified leads,
               and turn campaign traffic into sales conversations.
             </p>
@@ -360,6 +418,9 @@ function App() {
               </Button>
             </div>
           </div>
+
+          <DashboardVisual />
+          </div>
         </section>
 
         <section className="mx-auto grid max-w-[1180px] grid-cols-1 gap-3 border-b border-border px-4 py-8 text-sm font-black text-muted-foreground sm:grid-cols-5 sm:px-8 lg:px-9">
@@ -370,15 +431,19 @@ function App() {
           ))}
         </section>
 
+        {/* Animated stats */}
         <section className="mx-auto grid max-w-[1180px] grid-cols-1 gap-px px-4 py-10 sm:grid-cols-3 sm:px-8 lg:px-9">
           {stats.map((stat) => (
-            <Card className="rounded-none shadow-none first:rounded-t-lg last:rounded-b-lg sm:first:rounded-l-lg sm:first:rounded-tr-none sm:last:rounded-r-lg sm:last:rounded-bl-none" key={stat.label}>
-              <strong className="mb-1 block text-4xl">{stat.value}</strong>
-              <span className="text-muted-foreground">{stat.label}</span>
+            <Card
+              className="rounded-none shadow-none first:rounded-t-lg last:rounded-b-lg sm:first:rounded-l-lg sm:first:rounded-tr-none sm:last:rounded-r-lg sm:last:rounded-bl-none"
+              key={stat.label}
+            >
+              <AnimatedStat value={stat.value} suffix={stat.suffix} label={stat.label} />
             </Card>
           ))}
         </section>
 
+        {/* Features with hover glow */}
         <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="features">
           <div className="mb-7 max-w-[720px]">
             <Badge>What changed</Badge>
@@ -392,7 +457,10 @@ function App() {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {features.map(({ icon: Icon, title, text }) => (
-              <Card key={title}>
+              <Card
+                key={title}
+                className="cursor-default hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_24px_56px_rgba(24,32,44,0.14)] dark:hover:shadow-[0_24px_56px_rgba(0,0,0,0.38)]"
+              >
                 <Icon className="mb-5 text-accent" size={22} />
                 <h3 className="mb-2 text-lg font-extrabold">{title}</h3>
                 <p className="leading-7 text-muted-foreground">{text}</p>
@@ -410,7 +478,7 @@ function App() {
           </div>
           <ol className="grid gap-3">
             {steps.map((step) => (
-              <li className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-muted-foreground" key={step}>
+              <li className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground" key={step}>
                 <Check className="shrink-0 text-primary" size={18} />
                 <span>{step}</span>
               </li>
@@ -418,6 +486,7 @@ function App() {
           </ol>
         </section>
 
+        {/* Pricing with monthly/yearly toggle */}
         <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="pricing">
           <div className="mb-7 max-w-[720px]">
             <Badge>Pricing</Badge>
@@ -426,50 +495,106 @@ function App() {
             </h2>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {plans.map((plan) => (
-              <Card
+          {/* Billing toggle */}
+          <div className="mb-8 flex items-center gap-2">
+            <div className="flex rounded-lg border border-border bg-muted p-1">
+              <button
+                type="button"
+                onClick={() => setYearly(false)}
                 className={cn(
-                  "grid gap-5",
-                  plan.featured && "border-primary/60 shadow-[0_22px_54px_rgba(24,32,44,0.14)] dark:shadow-[0_22px_54px_rgba(0,0,0,0.38)]",
+                  "rounded-md px-4 py-1.5 text-sm font-bold transition-all duration-200",
+                  !yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                 )}
-                key={plan.name}
               >
-                <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-extrabold">{plan.name}</h3>
-                    {plan.featured ? <Badge className="normal-case tracking-normal">Popular</Badge> : null}
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setYearly(true)}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-4 py-1.5 text-sm font-bold transition-all duration-200",
+                  yearly ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Yearly
+                <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-xs font-black text-primary">-20%</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {plans.map((plan) => {
+              const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
+              return (
+                <Card
+                  className={cn(
+                    "grid gap-5",
+                    plan.featured && "border-primary/60 shadow-[0_22px_54px_rgba(24,32,44,0.14)] dark:shadow-[0_22px_54px_rgba(0,0,0,0.38)]",
+                  )}
+                  key={plan.name}
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-extrabold">{plan.name}</h3>
+                      {plan.featured ? <Badge className="normal-case tracking-normal">Popular</Badge> : null}
+                    </div>
+                    <div className="my-3 flex items-end gap-1">
+                      <strong className="text-4xl">${price}</strong>
+                      <span className="mb-1 text-sm text-muted-foreground">/mo</span>
+                    </div>
+                    <p className="leading-7 text-muted-foreground">{plan.text}</p>
                   </div>
-                  <strong className="my-3 block text-4xl">{plan.price}</strong>
-                  <p className="leading-7 text-muted-foreground">{plan.text}</p>
-                </div>
-                <ul className="grid gap-2 pl-5 text-muted-foreground">
-                  {plan.items.map((item) => (
-                    <li className="list-disc" key={item}>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Button className="mt-auto w-fit" href="#top" variant={plan.featured ? "primary" : "secondary"}>
-                  Choose plan <ArrowRight size={16} />
-                </Button>
-              </Card>
-            ))}
+                  <ul className="grid gap-2 pl-5 text-muted-foreground">
+                    {plan.items.map((item) => (
+                      <li className="list-disc" key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <Button className="mt-auto w-fit" href="#top" variant={plan.featured ? "primary" : "secondary"}>
+                    Choose plan <ArrowRight size={16} />
+                  </Button>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
+        {/* FAQ accordion */}
         <section className="mx-auto max-w-[1180px] px-4 py-12 sm:px-8 lg:px-9" id="faq">
           <div className="mb-7 max-w-[720px]">
             <Badge>FAQ</Badge>
             <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">Quick answers before launch.</h2>
           </div>
           <div className="grid gap-3">
-            {faqs.map((faq) => (
-              <Card className="grid gap-3 md:grid-cols-[0.8fr_1.2fr]" key={faq.question}>
-                <h3 className="text-lg font-extrabold">{faq.question}</h3>
-                <p className="leading-7 text-muted-foreground">{faq.answer}</p>
-              </Card>
-            ))}
+            {faqs.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <article
+                  key={faq.question}
+                  className="rounded-lg border border-border bg-card text-card-foreground shadow-[0_18px_44px_rgba(24,32,44,0.08)] transition-all duration-300 dark:shadow-[0_22px_54px_rgba(0,0,0,0.28)]"
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 p-6 text-left"
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                  >
+                    <h3 className="text-lg font-extrabold">{faq.question}</h3>
+                    <ChevronDown
+                      size={20}
+                      className={cn("shrink-0 text-muted-foreground transition-transform duration-300", isOpen && "rotate-180")}
+                    />
+                  </button>
+                  <div
+                    className={cn(
+                      "overflow-hidden transition-all duration-300",
+                      isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0",
+                    )}
+                  >
+                    <p className="px-6 pb-6 leading-7 text-muted-foreground">{faq.answer}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
 
