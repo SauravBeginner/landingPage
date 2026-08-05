@@ -315,11 +315,22 @@ function AnimatedStat({ value, suffix, label }: { value: number; suffix: string;
   const count = useCountUp(value, 1400, active);
 
   useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    // Fire as soon as any part of the stat is visible, with a bit of
+    // lead-in — a 0.5 threshold was missing fast scrolls and leaving
+    // the counter stuck at its initial value.
+    if (node.getBoundingClientRect().top < window.innerHeight) {
+      setActive(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setActive(true); observer.disconnect(); } },
-      { threshold: 0.5 },
+      { threshold: 0, rootMargin: "0px 0px -10% 0px" },
     );
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
@@ -694,10 +705,6 @@ function App() {
             <h2 className="mt-4 text-4xl leading-tight sm:text-5xl">
               Fixed-price packages for every stage.
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              International rates available on request. Every package includes a deadline
-              guarantee and a training handover.
-            </p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -774,7 +781,12 @@ function App() {
 
         <section className="mx-auto flex max-w-[1180px] flex-col gap-5 border-t border-border px-4 py-12 sm:px-8 md:flex-row md:items-center lg:px-9">
           <ShieldCheck className="shrink-0 text-primary" size={24} />
-          <h2 className="text-3xl leading-tight sm:text-4xl">Ready to fix what's costing you sales and support hours?</h2>
+          <div>
+            <h2 className="text-3xl leading-tight sm:text-4xl">Ready to fix what's costing you sales and support hours?</h2>
+            <p className="mt-2 text-muted-foreground">
+              Free 5-point audit, no obligation — most brands hear back from us within a day.
+            </p>
+          </div>
           <Button className="md:ml-auto" href={AUDIT_MAILTO}>
             Get your free audit <ArrowRight size={18} />
           </Button>
