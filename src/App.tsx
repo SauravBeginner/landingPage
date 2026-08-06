@@ -18,6 +18,7 @@ import {
   Moon,
   Newspaper,
   Palette,
+  PiggyBank,
   Rocket,
   Scale,
   ShieldCheck,
@@ -144,6 +145,14 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     text: "Full-featured blog UI, built for speed.",
     link: "https://github.com/SauravBeginner/blog-website",
     liveLink: "https://blogs.tech10x.in",
+  },
+  {
+    icon: PiggyBank,
+    iconClass: "from-teal-500 to-emerald-900",
+    title: "Qwark",
+    text: "SEBI-registered investment advisory — account aggregation, financial health score, goal-based portfolios. Contributed as part of the engineering team.",
+    link: "https://qwark.in",
+    liveLink: "https://qwark.in",
   },
 ];
 
