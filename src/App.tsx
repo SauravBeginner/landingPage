@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type Elemen
 import {
   ArrowRight,
   Building2,
+  CakeSlice,
+  Car,
   Check,
   ChevronDown,
   ChevronRight,
@@ -153,6 +155,22 @@ const work: Array<{ icon: LucideIcon; iconClass: string; title: string; text: st
     text: "SEBI-registered investment advisory — account aggregation, financial health score, goal-based portfolios. Contributed as part of the engineering team.",
     link: "https://qwark.in",
     liveLink: "https://qwark.in",
+  },
+  {
+    icon: CakeSlice,
+    iconClass: "from-amber-500 to-orange-900",
+    title: "Dessert Studio",
+    text: "Live cake menu, custom orders, and WhatsApp ordering flow for a late-night dessert brand.",
+    link: "https://github.com/SauravBeginner/ember-and-flour-demo",
+    liveLink: "https://dessert.tech10x.in",
+  },
+  {
+    icon: Car,
+    iconClass: "from-slate-500 to-slate-900",
+    title: "MotoSpa Detailing",
+    text: "Doorstep car & bike detailing — services and pricing, gallery, and WhatsApp booking.",
+    link: "https://github.com/SauravBeginner/motospa-demo",
+    liveLink: "https://motospa.tech10x.in",
   },
 ];
 
@@ -647,7 +665,7 @@ function App() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {work.map(({ icon: Icon, iconClass, title, text, link, liveLink }) => (
+            {work.map(({ icon: Icon, iconClass, title, text, liveLink }) => (
               <Card
                 key={title}
                 className="group grid gap-4 hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_24px_56px_rgba(24,32,44,0.14)] dark:hover:shadow-[0_24px_56px_rgba(0,0,0,0.38)]"
@@ -659,14 +677,16 @@ function App() {
                   <h3 className="mb-1.5 text-lg font-extrabold">{title}</h3>
                   <p className="leading-7 text-muted-foreground">{text}</p>
                 </div>
-                <a
-                  className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-primary no-underline"
-                  href={liveLink ?? link}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {liveLink ? "View live site" : "View code"} <ExternalLink size={14} />
-                </a>
+                {liveLink && (
+                  <a
+                    className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-primary no-underline"
+                    href={liveLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View live site <ExternalLink size={14} />
+                  </a>
+                )}
               </Card>
             ))}
           </div>
